@@ -1,3 +1,13 @@
+# Cow Emoji Keyboard
+
+> **This is a modified version of [FUTO Keyboard](https://github.com/futo-org/android-keyboard).**
+> It is not made or supported by FUTO. The original README follows below.
+
+Work in progress: a FUTO Keyboard fork built around the Emoji Kitchen
+combinations of the cow face 🐮.
+
+---
+
 # FUTO Keyboard
 
 The goal is to make a good modern keyboard that stays offline and doesn't spy on you. This keyboard is a fork of [LatinIME, The Android Open-Source Keyboard](https://android.googlesource.com/platform/packages/inputmethods/LatinIME), with significant changes made to it.

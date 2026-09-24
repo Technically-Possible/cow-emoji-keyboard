@@ -306,6 +306,20 @@ android {
             buildConfigField "String", "PAYMENT_PRICE", "FUTOPAY_PRICE"
         }
 
+        // Cow Emoji Kitchen mod: installs alongside the official FUTO Keyboard
+        cow {
+            dimension "buildType"
+            applicationIdSuffix ".cow"
+            versionNameSuffix "-cow"
+
+            buildConfigField "boolean", "IS_PLAYSTORE_BUILD", "false"
+            buildConfigField "boolean", "UPDATE_CHECKING", "false"
+            buildConfigField "boolean", "UPDATE_CHECKING_NETWORK", "false"
+            buildConfigField "String", "BRANCH", "\"${getBranch()}\""
+
+            buildConfigField "String", "PAYMENT_PRICE", "FUTOPAY_PRICE"
+        }
+
         playstore {
             dimension "buildType"
             applicationIdSuffix ".playstore"
@@ -348,6 +362,12 @@ android {
         stable {
             java.srcDirs = ['common/src', 'java/src', 'java/stable/java']
             manifest.srcFile 'java/stable/AndroidManifest.xml'
+        }
+
+        cow {
+            java.srcDirs = ['common/src', 'java/src', 'java/stable/java']
+            manifest.srcFile 'java/cow/AndroidManifest.xml'
+            res.srcDirs = ['java/cow/res']
         }
 
         unstable {
@@ -428,6 +448,8 @@ dependencies {
     stableImplementation 'ch.acra:acra-dialog:5.11.1'
     unstableImplementation 'ch.acra:acra-mail:5.11.1'
     unstableImplementation 'ch.acra:acra-dialog:5.11.1'
+    cowImplementation 'ch.acra:acra-mail:5.11.1'
+    cowImplementation 'ch.acra:acra-dialog:5.11.1'
 
     implementation 'sh.calvin.reorderable:reorderable:3.0.0'
 
