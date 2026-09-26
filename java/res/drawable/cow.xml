@@ -1,0 +1,46 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+  <!-- head -->
+  <path
+      android:pathData="M7,13.5L7,9a5,4.5 0,0 1,10 0L17,13.5"
+      android:strokeLineJoin="round"
+      android:strokeWidth="1.75"
+      android:fillColor="#00000000"
+      android:strokeColor="#FFFFFF"
+      android:strokeLineCap="round"/>
+  <!-- muzzle -->
+  <path
+      android:pathData="M6.5,16.5a5.5,3.5 0,1 0,11 0a5.5,3.5 0,1 0,-11 0"
+      android:strokeLineJoin="round"
+      android:strokeWidth="1.75"
+      android:fillColor="#00000000"
+      android:strokeColor="#FFFFFF"
+      android:strokeLineCap="round"/>
+  <!-- ears -->
+  <path
+      android:pathData="M7,8.5C5,7.5 2.5,8 2.5,9.5C3.5,11 5.5,11 7,10.5M17,8.5C19,7.5 21.5,8 21.5,9.5C20.5,11 18.5,11 17,10.5"
+      android:strokeLineJoin="round"
+      android:strokeWidth="1.75"
+      android:fillColor="#00000000"
+      android:strokeColor="#FFFFFF"
+      android:strokeLineCap="round"/>
+  <!-- horns -->
+  <path
+      android:pathData="M9,5.2C8.4,4 8.4,3 9,2M15,5.2C15.6,4 15.6,3 15,2"
+      android:strokeLineJoin="round"
+      android:strokeWidth="1.75"
+      android:fillColor="#00000000"
+      android:strokeColor="#FFFFFF"
+      android:strokeLineCap="round"/>
+  <!-- eyes and nostrils -->
+  <path
+      android:pathData="M10,10L10.01,10M14,10L14.01,10M10,16.5L10.01,16.5M14,16.5L14.01,16.5"
+      android:strokeLineJoin="round"
+      android:strokeWidth="2"
+      android:fillColor="#00000000"
+      android:strokeColor="#FFFFFF"
+      android:strokeLineCap="round"/>
+</vector>

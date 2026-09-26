@@ -33,6 +33,13 @@
     <string name="action_emoji_category_flags">Flags</string>
     <string name="action_emoji_category_ascii">ASCII</string>
     <string name="action_emoji_search_no_results_found">No results found</string>
+
+    <!-- For the cow Emoji Kitchen action (cow face combined with other emojis) -->
+    <string name="action_cow_kitchen_title">Cow Kitchen</string>
+    <string name="action_cow_kitchen_search_placeholder">Search by emoji name</string>
+    <string name="action_cow_kitchen_clear_search">Clear search</string>
+    <string name="action_cow_kitchen_replace_emoji_taps">Send cow combos from the emoji panel</string>
+
     <string name="action_emoji_jump_to_category">Jump to <xliff:g name="category" example="Flags">%s</xliff:g></string>
     <!-- Refers to clearing the most recently used emoji list -->
     <string name="action_emoji_clear_recent_emojis_question">Clear recent emojis?</string>
