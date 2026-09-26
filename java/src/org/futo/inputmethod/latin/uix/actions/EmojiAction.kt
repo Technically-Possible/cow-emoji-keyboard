@@ -112,6 +112,7 @@ import org.futo.inputmethod.latin.uix.LocalKeyboardScheme
 import org.futo.inputmethod.latin.uix.LocalManager
 import org.futo.inputmethod.latin.uix.PersistentActionState
 import org.futo.inputmethod.latin.uix.SettingsKey
+import org.futo.inputmethod.latin.uix.actions.cowkitchen.CowKitchen
 import org.futo.inputmethod.latin.uix.actions.emoji.EmojiItem
 import org.futo.inputmethod.latin.uix.actions.emoji.EmojiView
 import org.futo.inputmethod.latin.uix.settings.useDataStore
@@ -1182,7 +1183,7 @@ val EmojiAction = Action(
                     EmojiGrid(onClick = {
                         if(it.category == "ASCII") {
                             manager.typeTextSurroundedByWhitespace(it.emoji)
-                        } else {
+                        } else if(!CowKitchen.tryReplaceEmoji(manager, it)) {
                             manager.typeText(it.emoji)
                         }
                         manager.getLifecycleScope().launch {
