@@ -450,6 +450,8 @@ dependencies {
     unstableImplementation 'ch.acra:acra-dialog:5.11.1'
     cowImplementation 'ch.acra:acra-mail:5.11.1'
     cowImplementation 'ch.acra:acra-dialog:5.11.1'
+    // GIF search: converts RedGIFs MP4s to GIF for apps that only accept GIFs
+    implementation 'com.squareup:gifencoder:0.10.1'
 
     implementation 'sh.calvin.reorderable:reorderable:3.0.0'
 
