@@ -16,6 +16,7 @@ import org.futo.inputmethod.latin.uix.USE_SYSTEM_VOICE_INPUT
 import org.futo.inputmethod.latin.uix.actions.clipboard.ClipboardHistoryAction
 import org.futo.inputmethod.latin.uix.actions.cowkitchen.CowKitchenAction
 import org.futo.inputmethod.latin.uix.actions.fonttyper.FontTyperAction
+import org.futo.inputmethod.latin.uix.actions.gif.GifAction
 import org.futo.inputmethod.latin.uix.getSetting
 import org.futo.inputmethod.latin.uix.setSettingBlocking
 
@@ -45,6 +46,7 @@ val AllActionsMap = mapOf(
     "right" to ArrowRightAction,
     "font_typer" to FontTyperAction,
     "cow_kitchen" to CowKitchenAction,
+    "gif_search" to GifAction,
 )
 
 val ActionToId = AllActionsMap.entries.associate { it.value to it.key }
@@ -265,7 +267,7 @@ fun String.toActionList(): List<Action> = split(",").mapNotNull { AllActionsMap[
 
 val DefaultActionSettings = mapOf(
     ActionCategory.ActionKey to listOf(EmojiAction),
-    ActionCategory.PinnedKey to listOf(CowKitchenAction, VoiceInputAction),
+    ActionCategory.PinnedKey to listOf(CowKitchenAction, GifAction, VoiceInputAction),
     ActionCategory.Favorites to listOfNotNull(if(IsDebug) MemoryDebugAction else null, SwitchLanguageAction, UndoAction, RedoAction, TextEditAction, ClipboardHistoryAction, ThemeAction, KeyboardModeAction),
     ActionCategory.More to listOf(), // Remaining actions get populated automatically by ensureWellFormed
     ActionCategory.Disabled to listOf(MemoryDebugAction, SystemVoiceInputAction, BugViewerAction)

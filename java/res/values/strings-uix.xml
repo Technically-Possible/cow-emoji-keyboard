@@ -40,6 +40,33 @@
     <string name="action_cow_kitchen_clear_search">Clear search</string>
     <string name="action_cow_kitchen_replace_emoji_taps">Send cow combos from the emoji panel</string>
 
+    <!-- For the GIF search action -->
+    <string name="action_gif_title">GIFs</string>
+    <string name="action_gif_search_placeholder">Search GIFs</string>
+    <string name="action_gif_clear_search">Clear search</string>
+    <string name="action_gif_nsfw_toggle">18+</string>
+    <string name="action_gif_nsfw_confirm">Show adult (18+) GIFs from RedGIFs? Only continue if you are 18 or older.</string>
+    <string name="action_gif_nsfw_confirm_yes">I’m 18+</string>
+    <string name="action_gif_powered_by_klipy">Powered by KLIPY</string>
+    <string name="action_gif_powered_by_redgifs">18+ results from RedGIFs</string>
+    <string name="action_gif_status_downloading">Downloading…</string>
+    <string name="action_gif_status_converting">Converting to GIF… <xliff:g name="percent" example="40">%d</xliff:g>%%</string>
+    <string name="action_gif_error_generic">Couldn’t load GIFs: <xliff:g name="error" example="HTTP 500">%s</xliff:g></string>
+    <string name="action_gif_error_app_unsupported">This app doesn’t accept GIFs from the keyboard</string>
+    <string name="action_gif_klipy_setup_title">Set up GIF search</string>
+    <string name="action_gif_klipy_setup_body">GIF search uses KLIPY. Get a free API key at partner.klipy.com, copy it, then tap the button below.</string>
+    <string name="action_gif_klipy_setup_paste">Paste API key</string>
+    <string name="action_gif_klipy_setup_no_key">The clipboard doesn’t contain an API key</string>
+    <string name="action_gif_klipy_setup_nsfw_hint">18+ search (top right) works without a key.</string>
+    <string name="action_gif_klipy_change_key">Change KLIPY key</string>
+    <string name="action_gif_powered_by_redgifs_giphy">18+ results from RedGIFs and GIPHY</string>
+    <string name="action_gif_giphy_setup">Add GIPHY’s R-rated GIFs: get a free API key at developers.giphy.com, copy it, then tap below.</string>
+    <string name="action_gif_giphy_setup_paste">Paste GIPHY key</string>
+    <string name="action_gif_giphy_change_key">Change GIPHY key</string>
+    <string name="action_gif_giphy_error">GIPHY: <xliff:g name="error" example="HTTP 500">%s</xliff:g></string>
+    <string name="action_gif_network_permission_title">Network access is off</string>
+    <string name="action_gif_network_permission_body">GIF search needs internet access, which Android has turned off for this keyboard. Open the app’s settings, go to Permissions and allow network access, then reopen this panel.</string>
+    <string name="action_gif_network_permission_button">Open app settings</string>
     <string name="action_emoji_jump_to_category">Jump to <xliff:g name="category" example="Flags">%s</xliff:g></string>
     <!-- Refers to clearing the most recently used emoji list -->
     <string name="action_emoji_clear_recent_emojis_question">Clear recent emojis?</string>
