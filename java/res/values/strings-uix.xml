@@ -40,6 +40,18 @@
     <string name="action_cow_kitchen_clear_search">Clear search</string>
     <string name="action_cow_kitchen_replace_emoji_taps">Send cow combos from the emoji panel</string>
 
+    <!-- For the quick responses action (saved phrases sent with one tap) -->
+    <string name="action_quick_responses_title">Quick Responses</string>
+    <string name="action_quick_responses_add">Add quick response</string>
+    <string name="action_quick_responses_edit_title">Edit quick response</string>
+    <string name="action_quick_responses_placeholder">Type a phrase…</string>
+    <string name="action_quick_responses_empty">No quick responses yet. Tap + to add one.</string>
+    <string name="action_quick_responses_hint">Tap to send · Long-press to edit, delete or move</string>
+    <string name="action_quick_responses_save">Save</string>
+    <string name="action_quick_responses_edit">Edit</string>
+    <string name="action_quick_responses_delete">Delete</string>
+    <string name="action_quick_responses_move_top">Move to top</string>
+
     <!-- For the GIF search action -->
     <string name="action_gif_title">GIFs</string>
     <string name="action_gif_search_placeholder">Search GIFs</string>
