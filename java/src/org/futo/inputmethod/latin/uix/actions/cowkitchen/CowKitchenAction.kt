@@ -173,22 +173,31 @@ open class KitchenSet(
         return byEmoji[normalize(emoji)]
     }
 
-    /** Copies the asset into the cache dir (once) so the content provider can hand out a plain file */
+    /**
+     * Copies the asset into the cache dir so the content provider can hand out a plain file.
+     * Copies older than the installed APK are refreshed, so updated artwork replaces stale images.
+     */
     fun getCachedFile(context: Context, fileName: String): File {
         getEntries(context)
         require(byFile.containsKey(fileName)) { "Unknown $label kitchen image $fileName" }
 
         val dir = File(context.cacheDir, assetDir).apply { mkdirs() }
         val file = File(dir, fileName)
-        if (!file.exists() || file.length() == 0L) {
+        if (!file.exists() || file.length() == 0L || file.lastModified() < apkUpdateTime(context)) {
             val tmp = File(dir, "$fileName.tmp")
             context.assets.open("$assetDir/$fileName").use { input ->
                 tmp.outputStream().use { input.copyTo(it) }
             }
+            file.delete()
             tmp.renameTo(file)
         }
         return file
     }
+
+    private var apkUpdateTime: Long? = null
+    private fun apkUpdateTime(context: Context): Long = apkUpdateTime ?: runCatching {
+        context.packageManager.getPackageInfo(context.packageName, 0).lastUpdateTime
+    }.getOrDefault(0L).also { apkUpdateTime = it }
 
     fun loadThumbnail(context: Context, entry: CowKitchenEntry): ImageBitmap? {
         thumbnails.get(entry.file)?.let { return it }
