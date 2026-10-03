@@ -3,8 +3,22 @@ package org.futo.inputmethod.latin.uix.actions.cowkitchen
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.util.LruCache
+import android.view.HapticFeedbackConstants
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.awaitLongPressOrCancellation
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.grid.LazyGridState
+import androidx.compose.runtime.MutableState
+import androidx.compose.ui.composed
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -208,6 +222,10 @@ open class KitchenSet(
         return bitmap
     }
 
+    /** Full-resolution image for the press-and-hold preview */
+    fun loadFull(context: Context, entry: CowKitchenEntry): ImageBitmap? =
+        context.assets.open("$assetDir/${entry.file}").use { BitmapFactory.decodeStream(it) }?.asImageBitmap()
+
     fun send(manager: KeyboardManagerForAction, entry: CowKitchenEntry): Boolean {
         val uri = "content://${FONT_AUTHORITY}/$route/${entry.file}".toUri()
         return manager.typeUri(uri, listOf(COW_MIME_TYPE), true)
@@ -313,20 +331,100 @@ private fun CowKitchenGrid(
             )
         }
 
-        LazyVerticalGrid(
-            columns = GridCells.Adaptive(56.dp),
-            state = gridState,
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1.0f)
-                .padding(horizontal = 4.dp)
-        ) {
-            items(shown, key = { it.file }) { entry ->
-                CowKitchenCell(set, entry) {
-                    set.send(manager, it)
-                    manager.performHapticAndAudioFeedback(Constants.CODE_EMOJI, view)
+        val preview = remember { mutableStateOf<CowKitchenEntry?>(null) }
+        Box(Modifier.fillMaxWidth().weight(1.0f)) {
+            LazyVerticalGrid(
+                columns = GridCells.Adaptive(56.dp),
+                state = gridState,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 4.dp)
+                    .pressAndHoldPreview(gridState, shown, preview)
+            ) {
+                items(shown, key = { it.file }) { entry ->
+                    CowKitchenCell(set, entry) {
+                        set.send(manager, it)
+                        manager.performHapticAndAudioFeedback(Constants.CODE_EMOJI, view)
+                    }
                 }
             }
+
+            preview.value?.let { CowKitchenPreview(set, it) }
+        }
+    }
+}
+
+/**
+ * Telegram-style sticker peek: hold an image to show it large, slide to preview others,
+ * lift to close without sending. Taps and scrolling work as before.
+ */
+private fun Modifier.pressAndHoldPreview(
+    gridState: LazyGridState,
+    shown: List<CowKitchenEntry>,
+    preview: MutableState<CowKitchenEntry?>
+): Modifier = composed {
+    val view = LocalView.current
+    pointerInput(shown) {
+        fun entryAt(pos: Offset): CowKitchenEntry? = gridState.layoutInfo.visibleItemsInfo.firstOrNull {
+            pos.x >= it.offset.x && pos.x < it.offset.x + it.size.width &&
+                pos.y >= it.offset.y && pos.y < it.offset.y + it.size.height
+        }?.let { shown.getOrNull(it.index) }
+
+        awaitEachGesture {
+            val down = awaitFirstDown(requireUnconsumed = false)
+            // Cancelled if the grid starts scrolling or the finger lifts first (a normal tap)
+            val hold = awaitLongPressOrCancellation(down.id) ?: return@awaitEachGesture
+            preview.value = entryAt(hold.position) ?: return@awaitEachGesture
+            view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+
+            try {
+                while (true) {
+                    val event = awaitPointerEvent(PointerEventPass.Initial)
+                    val change = event.changes.firstOrNull { it.id == down.id } ?: break
+                    // Ours now: keeps the grid from scrolling and the cell from sending on release
+                    change.consume()
+                    if (!change.pressed) break
+                    entryAt(change.position)?.let {
+                        if (it != preview.value) {
+                            preview.value = it
+                            view.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK)
+                        }
+                    }
+                }
+            } finally {
+                preview.value = null
+            }
+        }
+    }
+}
+
+@Composable
+private fun CowKitchenPreview(set: KitchenSet, entry: CowKitchenEntry) {
+    val context = LocalContext.current
+    val full by produceState<ImageBitmap?>(null, set, entry.file) {
+        value = withContext(Dispatchers.IO) { set.loadFull(context, entry) }
+    }
+    val image = full ?: set.loadThumbnail(context, entry)
+
+    BoxWithConstraints(
+        Modifier
+            .fillMaxSize()
+            .background(Color.Black.copy(alpha = 0.55f)),
+        contentAlignment = Alignment.Center
+    ) {
+        val side = minOf(maxWidth, maxHeight - 32.dp, 280.dp)
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            image?.let {
+                Image(it, contentDescription = "${set.label} + ${entry.name}", modifier = Modifier.size(side))
+            }
+            Text(
+                "${entry.emoji}  ${entry.name}",
+                style = Typography.SmallMl,
+                color = Color.White,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
         }
     }
 }
