@@ -1,10 +1,124 @@
 # Cow Emoji Keyboard
 
 > **This is a modified version of [FUTO Keyboard](https://github.com/futo-org/android-keyboard).**
-> It is not made or supported by FUTO. The original README follows below.
+> It is not made or supported by FUTO. The original README follows further down.
 
-Work in progress: a FUTO Keyboard fork built around the Emoji Kitchen
-combinations of the cow face 🐮.
+A FUTO Keyboard fork built around the 396 [Emoji Kitchen](https://emojikitchen.dev)
+combinations of the cow face 🐮 with every other supported emoji, plus a GIF
+search and saved quick responses.
+
+It builds as a separate app ("FUTO Keyboard (Cow)", app id
+`org.futo.inputmethod.latin.cow`), so it installs alongside the official keyboard.
+
+## Features
+
+### 🐮 Cow Kitchen
+
+A new action pinned to the action bar. It opens a grid of every cow combination.
+
+- **Tap** a combination to send it to the app as an image.
+- **Press and hold** to see it full size, Telegram-sticker style. Slide your finger
+  to preview others, and let go to close it without sending anything.
+- **Search** by emoji name or keyword ("cry", "tears joy", "heart"), or paste an
+  emoji. The keyboard hides itself when you press Enter or start scrolling, so the
+  results get the whole panel.
+
+### Emoji replacements
+
+In the regular emoji panel, tapping an emoji sends its cow combination instead
+(😂 sends cow + 😂).
+
+- This only happens in apps that accept images (Messages, WhatsApp, Signal,
+  Telegram, ...). Elsewhere the plain emoji is typed as usual.
+- Emojis without a cow combination, and the ASCII emoticons, type normally.
+- Turn it off with the switch at the top of the Cow Kitchen panel.
+
+### GIF search
+
+A Gboard-style GIF panel.
+
+- Regular GIFs come from [KLIPY](https://partner.klipy.com). It needs a free API
+  key: copy it, then tap **Paste API key** in the GIF panel.
+- The **18+** button switches to adult results from RedGIFs (no key needed). It
+  asks you to confirm you are 18 or older the first time. Previews play as muted,
+  looping videos.
+- With a free [GIPHY](https://developers.giphy.com) key (**Paste GIPHY key** at the
+  top of the 18+ results), GIPHY GIFs rated up to R are mixed into 18+ results.
+  Free GIPHY keys allow 100 searches an hour.
+- Each GIF is sent in whatever format the app accepts: GIF first, otherwise MP4.
+  RedGIFs only has MP4s, so for apps that take GIFs but not video, the clip is
+  converted on the phone into a short GIF (up to 6 s, 10 fps, 320 px wide).
+- This is the only feature that uses the internet. The `cow` build adds the
+  `INTERNET` permission for it; stock FUTO Keyboard has no internet access. On
+  Android versions that let you switch off network access per app, the panel
+  tells you if it's off and links to the setting.
+
+API keys are stored only in the keyboard's settings on your phone.
+
+### Quick Responses
+
+A speech-bubble action holding saved phrases.
+
+- Tap a phrase to type it; the panel then closes.
+- Add phrases with **+**. Long-press one to edit it, delete it or move it to the top.
+- Phrases are kept in the keyboard's settings, which Android encrypts until the
+  phone is unlocked.
+
+## Building
+
+You need the Android SDK (the NDK and CMake download automatically). Clone with
+submodules, as described in FUTO's instructions below, then:
+
+```sh
+./gradlew assembleCowRelease
+adb install -r build/outputs/apk/cow/release/android-keyboard-cow-release.apk
+```
+
+Then enable "FUTO Keyboard (Cow)" in Android's keyboard settings.
+
+On Windows, run the build with `PYTHONUTF8=1` set, as FUTO's locale generator
+script needs it.
+
+Release builds are signed with FUTO's shared debug key unless you set up your own
+`keystore.properties`. They are **not** official FUTO builds, so the signing
+fingerprints in FUTO's README below don't apply to them.
+
+## Updating the cow combinations
+
+Google adds new Emoji Kitchen combinations from time to time. To refresh them:
+
+```sh
+python tools/cow_kitchen/fetch_cow_kitchen.py
+```
+
+This downloads the emojikitchen.dev data set (about 100 MB), then writes the index
+and images to `java/assets/cow_kitchen/`. Pass `--metadata path/to/metadata.json`
+to reuse a copy you already downloaded.
+
+## What's changed from FUTO Keyboard
+
+| Path | Change |
+| --- | --- |
+| `java/src/.../uix/actions/cowkitchen/` | Cow Kitchen panel, search, preview and emoji replacement |
+| `java/src/.../uix/actions/gif/` | GIF search: providers, downloads and conversion, video previews, the panel |
+| `java/src/.../uix/actions/quickresponses/` | Quick Responses panel |
+| `java/src/.../uix/actions/EmojiAction.kt` | Emoji taps try the cow combination first |
+| `java/src/.../uix/actions/Registry.kt` | Registers the new actions and pins them by default |
+| `java/src/.../content/ContentProvider.kt` | Serves cow images and GIFs to other apps |
+| `java/assets/cow_kitchen/` | The combination images and their index |
+| `tools/cow_kitchen/` | Script that fetches the combinations |
+| `build.gradle`, `java/cow/` | The `cow` build flavour |
+
+## Licensing
+
+FUTO Keyboard is under the [FUTO Source First License 1.1](LICENSE.md), and so is
+this fork. You may modify and share it only for free and only for non-commercial
+use.
+
+The Emoji Kitchen images belong to Google. The combination data comes from
+[emojikitchen.dev](https://emojikitchen.dev)
+([xsalazar/emoji-kitchen-backend](https://github.com/xsalazar/emoji-kitchen-backend)).
+KLIPY, GIPHY and RedGIFs content is subject to those services' terms.
 
 ---
 
