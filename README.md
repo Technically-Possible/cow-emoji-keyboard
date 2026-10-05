@@ -10,6 +10,9 @@ search and saved quick responses.
 It builds as a separate app ("FUTO Keyboard (Cow)", app id
 `org.futo.inputmethod.latin.cow`), so it installs alongside the official keyboard.
 
+> 🚧 **Other animals are on the way (WIP).** Other animals will get their own
+> editions, each built around that animal's Emoji Kitchen combinations.
+
 ## Features
 
 ### 🐮 Cow Kitchen
