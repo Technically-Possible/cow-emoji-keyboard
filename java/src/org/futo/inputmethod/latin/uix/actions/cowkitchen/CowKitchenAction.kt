@@ -12,7 +12,10 @@ import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.awaitLongPressOrCancellation
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.grid.LazyGridState
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.composed
 import androidx.compose.ui.geometry.Offset
@@ -63,7 +66,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
@@ -79,6 +85,8 @@ import org.futo.inputmethod.latin.uix.KeyboardManagerForAction
 import org.futo.inputmethod.latin.uix.LocalKeyboardScheme
 import org.futo.inputmethod.latin.uix.SettingsKey
 import org.futo.inputmethod.latin.uix.actions.emoji.EmojiItem
+import org.futo.inputmethod.latin.uix.dataStore
+import org.futo.inputmethod.latin.uix.isDeviceLocked
 import org.futo.inputmethod.latin.uix.getSetting
 import org.futo.inputmethod.latin.uix.settings.useDataStore
 import org.futo.inputmethod.latin.uix.theme.Typography
@@ -106,6 +114,8 @@ data class CowKitchenEntry(
 val CowReplaceEmojiTaps = SettingsKey(booleanPreferencesKey("cow_kitchen_replace_emoji_taps"), true)
 
 private const val COW_MIME_TYPE = "image/png"
+private const val USAGE_LIMIT = 64
+private const val MOST_USED_SHOWN = 20
 
 /**
  * One set of Emoji Kitchen images bundled in the app's assets (an index JSON plus PNGs). Images
@@ -228,7 +238,40 @@ open class KitchenSet(
 
     fun send(manager: KeyboardManagerForAction, entry: CowKitchenEntry): Boolean {
         val uri = "content://${FONT_AUTHORITY}/$route/${entry.file}".toUri()
-        return manager.typeUri(uri, listOf(COW_MIME_TYPE), true)
+        val sent = manager.typeUri(uri, listOf(COW_MIME_TYPE), true)
+        if (sent) {
+            val context = manager.getContext()
+            manager.getLifecycleScope().launch { recordUse(context, entry.file) }
+        }
+        return sent
+    }
+
+    private val usageKey = stringPreferencesKey("${route}_kitchen_usage")
+
+    // Stored as "file=count" pairs separated by ';', most used first
+    private fun parseUsage(stored: String?): LinkedHashMap<String, Int> = LinkedHashMap<String, Int>().apply {
+        stored?.split(';')?.forEach { pair ->
+            val i = pair.lastIndexOf('=')
+            if (i > 0) pair.substring(i + 1).toIntOrNull()?.let { put(pair.substring(0, i), it) }
+        }
+    }
+
+    private suspend fun recordUse(context: Context, file: String) {
+        if (context.isDeviceLocked) return
+        context.dataStore.edit { ds ->
+            val counts = parseUsage(ds[usageKey])
+            // Re-inserted first, so among equal counts the most recently used wins
+            val updated = linkedMapOf(file to (counts.remove(file) ?: 0) + 1).apply { putAll(counts) }
+            ds[usageKey] = updated.entries.sortedByDescending { it.value }.take(USAGE_LIMIT)
+                .joinToString(";") { "${it.key}=${it.value}" }
+        }
+    }
+
+    /** The most often sent combinations, for the strip at the top of the panel */
+    suspend fun mostUsed(context: Context, limit: Int): List<CowKitchenEntry> {
+        if (context.isDeviceLocked) return emptyList()
+        getEntries(context)
+        return parseUsage(context.getSetting(usageKey, "")).keys.mapNotNull { byFile[it] }.take(limit)
     }
 }
 
@@ -295,61 +338,113 @@ private fun CowKitchenGrid(
         }
     }
 
-    Column {
-        if (!isSearching) {
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .clickable { replaceEmojiTaps.setValue(!replaceEmojiTaps.value) }
-                    .padding(horizontal = 12.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    stringResource(replaceLabel),
-                    style = Typography.SmallMl,
-                    modifier = Modifier.weight(1.0f)
-                )
-                Switch(checked = replaceEmojiTaps.value, onCheckedChange = { replaceEmojiTaps.setValue(it) })
+    val context = LocalContext.current
+    val mostUsed by produceState(emptyList<CowKitchenEntry>(), set) {
+        value = withContext(Dispatchers.IO) { set.mostUsed(context, MOST_USED_SHOWN) }
+    }
+    val preview = remember { mutableStateOf<CowKitchenEntry?>(null) }
+    val onClick: (CowKitchenEntry) -> Unit = {
+        set.send(manager, it)
+        manager.performHapticAndAudioFeedback(Constants.CODE_EMOJI, view)
+    }
+
+    Box(Modifier.fillMaxSize()) {
+        Column(Modifier.fillMaxSize()) {
+            if (!isSearching && mostUsed.isNotEmpty()) {
+                MostUsedBar(set, mostUsed, preview, onClick)
             }
-        }
 
-        if (!supportsImages) {
-            Text(
-                stringResource(R.string.action_clipboard_manager_error_app_image_insertion_unsupported),
-                style = Typography.SmallMl,
-                color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
-            )
-        }
+            if (!isSearching) {
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .clickable { replaceEmojiTaps.setValue(!replaceEmojiTaps.value) }
+                        .padding(horizontal = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        stringResource(replaceLabel),
+                        style = Typography.SmallMl,
+                        modifier = Modifier.weight(1.0f)
+                    )
+                    Switch(checked = replaceEmojiTaps.value, onCheckedChange = { replaceEmojiTaps.setValue(it) })
+                }
+            }
 
-        if (shown.isEmpty()) {
-            Text(
-                stringResource(R.string.action_emoji_search_no_results_found),
-                style = Typography.SmallMl,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth().padding(16.dp)
-            )
-        }
+            if (!supportsImages) {
+                Text(
+                    stringResource(R.string.action_clipboard_manager_error_app_image_insertion_unsupported),
+                    style = Typography.SmallMl,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+                )
+            }
 
-        val preview = remember { mutableStateOf<CowKitchenEntry?>(null) }
-        Box(Modifier.fillMaxWidth().weight(1.0f)) {
+            if (shown.isEmpty()) {
+                Text(
+                    stringResource(R.string.action_emoji_search_no_results_found),
+                    style = Typography.SmallMl,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth().padding(16.dp)
+                )
+            }
+
             LazyVerticalGrid(
                 columns = GridCells.Adaptive(56.dp),
                 state = gridState,
                 modifier = Modifier
-                    .fillMaxSize()
+                    .fillMaxWidth()
+                    .weight(1.0f)
                     .padding(horizontal = 4.dp)
-                    .pressAndHoldPreview(gridState, shown, preview)
+                    .pressAndHoldPreview(shown, preview) { pos ->
+                        gridState.layoutInfo.visibleItemsInfo.firstOrNull {
+                            pos.x >= it.offset.x && pos.x < it.offset.x + it.size.width &&
+                                pos.y >= it.offset.y && pos.y < it.offset.y + it.size.height
+                        }?.let { shown.getOrNull(it.index) }
+                    }
             ) {
                 items(shown, key = { it.file }) { entry ->
-                    CowKitchenCell(set, entry) {
-                        set.send(manager, it)
-                        manager.performHapticAndAudioFeedback(Constants.CODE_EMOJI, view)
-                    }
+                    CowKitchenCell(set, entry, onClick)
                 }
             }
+        }
 
-            preview.value?.let { CowKitchenPreview(set, it) }
+        preview.value?.let { CowKitchenPreview(set, it) }
+    }
+}
+
+/** A scrolling strip of the most used combinations, above the full grid */
+@Composable
+private fun MostUsedBar(
+    set: KitchenSet,
+    entries: List<CowKitchenEntry>,
+    preview: MutableState<CowKitchenEntry?>,
+    onClick: (CowKitchenEntry) -> Unit
+) {
+    val rowState = rememberLazyListState()
+    Text(
+        stringResource(R.string.action_cow_kitchen_most_used),
+        style = Typography.SmallMl,
+        modifier = Modifier
+            .padding(start = 12.dp, top = 4.dp)
+            .alpha(0.75f)
+    )
+    LazyRow(
+        state = rowState,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(52.dp)
+            .padding(horizontal = 4.dp)
+            .pressAndHoldPreview(entries, preview) { pos ->
+                rowState.layoutInfo.visibleItemsInfo.firstOrNull {
+                    pos.x >= it.offset && pos.x < it.offset + it.size
+                }?.let { entries.getOrNull(it.index) }
+            }
+    ) {
+        items(entries, key = { it.file }) { entry ->
+            Box(Modifier.size(52.dp)) {
+                CowKitchenCell(set, entry, onClick)
+            }
         }
     }
 }
@@ -359,20 +454,15 @@ private fun CowKitchenGrid(
  * lift to close without sending. Taps and scrolling work as before.
  */
 private fun Modifier.pressAndHoldPreview(
-    gridState: LazyGridState,
     shown: List<CowKitchenEntry>,
-    preview: MutableState<CowKitchenEntry?>
+    preview: MutableState<CowKitchenEntry?>,
+    entryAt: (Offset) -> CowKitchenEntry?
 ): Modifier = composed {
     val view = LocalView.current
     pointerInput(shown) {
-        fun entryAt(pos: Offset): CowKitchenEntry? = gridState.layoutInfo.visibleItemsInfo.firstOrNull {
-            pos.x >= it.offset.x && pos.x < it.offset.x + it.size.width &&
-                pos.y >= it.offset.y && pos.y < it.offset.y + it.size.height
-        }?.let { shown.getOrNull(it.index) }
-
         awaitEachGesture {
             val down = awaitFirstDown(requireUnconsumed = false)
-            // Cancelled if the grid starts scrolling or the finger lifts first (a normal tap)
+            // Cancelled if the list starts scrolling or the finger lifts first (a normal tap)
             val hold = awaitLongPressOrCancellation(down.id) ?: return@awaitEachGesture
             preview.value = entryAt(hold.position) ?: return@awaitEachGesture
             view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
@@ -381,7 +471,7 @@ private fun Modifier.pressAndHoldPreview(
                 while (true) {
                     val event = awaitPointerEvent(PointerEventPass.Initial)
                     val change = event.changes.firstOrNull { it.id == down.id } ?: break
-                    // Ours now: keeps the grid from scrolling and the cell from sending on release
+                    // Ours now: keeps the list from scrolling and the cell from sending on release
                     change.consume()
                     if (!change.pressed) break
                     entryAt(change.position)?.let {

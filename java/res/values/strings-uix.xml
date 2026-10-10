@@ -38,6 +38,7 @@
     <string name="action_cow_kitchen_title">Cow Kitchen</string>
     <string name="action_cow_kitchen_search_placeholder">Search by emoji name</string>
     <string name="action_cow_kitchen_clear_search">Clear search</string>
+    <string name="action_cow_kitchen_most_used">Most used</string>
     <string name="action_cow_kitchen_replace_emoji_taps">Send cow combos from the emoji panel</string>
 
     <!-- For the quick responses action (saved phrases sent with one tap) -->
