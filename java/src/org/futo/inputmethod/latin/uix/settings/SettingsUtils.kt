@@ -11,6 +11,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import org.futo.inputmethod.accessibility.AccessibilityUtils
+import org.futo.inputmethod.latin.uix.actions.kitchen.KitchenAnimalSetting
+import org.futo.inputmethod.latin.uix.actions.kitchen.SetupChooseAnimal
 
 @Composable
 fun SetupOrMain(inputMethodEnabled: Boolean, inputMethodSelected: Boolean, doublePackage: Boolean, main: @Composable () -> Unit) {
@@ -35,9 +37,18 @@ fun SetupOrMain(inputMethodEnabled: Boolean, inputMethodSelected: Boolean, doubl
         SetupDirectBootWarning()
     } else if (!inputMethodSelected) {
         SetupChangeDefaultIME(doublePackage)
+    } else if (needsAnimalChoice()) {
+        SetupChooseAnimal()
     } else {
         main()
     }
+}
+
+/** True once settings have loaded and no animal has been picked yet */
+@Composable
+private fun needsAnimalChoice(): Boolean {
+    val prefs = LocalDataStoreCache.current?.currPreferences ?: return false
+    return prefs[KitchenAnimalSetting.key].isNullOrEmpty()
 }
 
 /** Elements at the bottom of the settings list sometimes become uninteractable due to gesture

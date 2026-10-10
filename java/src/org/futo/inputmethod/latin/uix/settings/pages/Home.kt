@@ -57,6 +57,13 @@ val HomeScreenLite = UserSettingsMenu(
         ),
 
         userSettingNavigationItem(
+            title = R.string.kitchen_settings_title,
+            style = NavigationItemStyle.HomePrimary,
+            navigateTo = "animal",
+            icon = R.drawable.cow
+        ),
+
+        userSettingNavigationItem(
             title = R.string.language_settings_title,
             style = NavigationItemStyle.HomePrimary,
             navigateTo = "languages",
