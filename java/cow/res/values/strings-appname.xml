@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="english_ime_name">FUTO Keyboard (Cow)</string>
-    <string name="spell_checker_service_name">FUTO Spell Checker (Cow)</string>
-    <string name="english_ime_settings">FUTO Keyboard Settings (Cow)</string>
-    <string name="android_spell_checker_settings">FUTO Spell Checker Settings (Cow)</string>
+    <string name="english_ime_name">Cowmoji Keyboard</string>
+    <string name="spell_checker_service_name">Cowmoji Spell Checker</string>
+    <string name="english_ime_settings">Cowmoji Keyboard Settings</string>
+    <string name="android_spell_checker_settings">Cowmoji Spell Checker Settings</string>
 </resources>

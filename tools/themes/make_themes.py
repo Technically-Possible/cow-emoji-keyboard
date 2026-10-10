@@ -301,10 +301,10 @@ def theme_txt(t, font_name):
     lines = [
         "# Format version: 1",
         f'name = "{t["name"]}"',
-        'author = "Cow Emoji Keyboard"',
+        'author = "Cowmoji Keyboard"',
         f'id = "{t["id"]}"',
         "version = 1",
-        f'description = "{t["name"]} theme for the cow build of FUTO Keyboard."',
+        f'description = "{t["name"]} theme for Cowmoji Keyboard."',
         "",
         "[options]",
         "auto_borders = true",

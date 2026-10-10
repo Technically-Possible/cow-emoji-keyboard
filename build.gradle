@@ -306,7 +306,7 @@ android {
             buildConfigField "String", "PAYMENT_PRICE", "FUTOPAY_PRICE"
         }
 
-        // Cow Emoji Kitchen mod: installs alongside the official FUTO Keyboard
+        // Cowmoji Keyboard: installs alongside the official FUTO Keyboard
         cow {
             dimension "buildType"
             applicationIdSuffix ".cow"
