@@ -368,6 +368,7 @@ android {
             java.srcDirs = ['common/src', 'java/src', 'java/stable/java']
             manifest.srcFile 'java/cow/AndroidManifest.xml'
             res.srcDirs = ['java/cow/res']
+            assets.srcDirs = ['java/cow/assets']
         }
 
         unstable {
