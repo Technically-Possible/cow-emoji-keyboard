@@ -1,5 +1,6 @@
 package org.futo.inputmethod.latin.uix.actions
 
+import androidx.compose.ui.graphics.Color
 import android.view.HapticFeedbackConstants
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
@@ -91,9 +92,11 @@ fun ActionItem(action: Action, modifier: Modifier = Modifier, dragIcon: Boolean 
                         .padding(6.dp)
                 ) {
                     Spacer(modifier = Modifier.weight(1.0f))
+                    val picture = action.iconPainter?.invoke()
                     Icon(
-                        painterResource(id = action.icon),
+                        picture ?: painterResource(id = action.icon),
                         contentDescription = null,
+                        tint = if (picture != null) Color.Unspecified else LocalContentColor.current,
                         modifier = Modifier.align(
                             CenterHorizontally
                         )

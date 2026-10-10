@@ -555,10 +555,11 @@ fun LazyItemScope.ActionItem(idx: Int, action: Action, onSelect: (Action) -> Uni
         .combinedClickable(
             onLongClick = action.altPressImpl?.let { { onLongSelect(action) } },
             onClick = { onSelect(action) }), contentAlignment = Center) {
+        val picture = action.iconPainter?.invoke()
         Icon(
-            painter = painterResource(id = action.icon),
+            painter = picture ?: painterResource(id = action.icon),
             contentDescription = stringResource(action.name),
-            tint = contentCol,
+            tint = if (picture != null) Color.Unspecified else contentCol,
             modifier = Modifier.size(20.dp),
         )
     }
@@ -592,10 +593,11 @@ fun ActionItemSmall(action: Action, onSelect: (Action) -> Unit, onLongSelect: (A
         },
         contentAlignment = Center
     ) {
+        val picture = action.iconPainter?.invoke()
         Icon(
-            painter = painterResource(id = action.icon),
+            painter = picture ?: painterResource(id = action.icon),
             contentDescription = stringResource(action.name),
-            tint = fgCol,
+            tint = if (picture != null) Color.Unspecified else fgCol,
             modifier = Modifier.size(16.dp)
         )
     }

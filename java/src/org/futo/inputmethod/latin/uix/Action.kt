@@ -1,5 +1,6 @@
 package org.futo.inputmethod.latin.uix
 
+import androidx.compose.ui.graphics.painter.Painter
 import android.content.Context
 import android.graphics.Typeface
 import android.net.Uri
@@ -190,6 +191,9 @@ data class Action(
     val shownInEditor: Boolean = true,
 
     val settingsMenu: UserSettingsMenu? = null,
+
+    /** Optional picture shown instead of [icon], in its own colours (for example an emoji) */
+    val iconPainter: (@Composable () -> Painter?)? = null,
 )
 
 data class LangSpecAction(
