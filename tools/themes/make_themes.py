@@ -168,13 +168,28 @@ def blue_lantern_background():
     layer[..., 3] = light * 170
     img = Image.alpha_composite(img, Image.fromarray(layer.astype(np.uint8), "RGBA"))
 
-    # the ring of light
-    ring = Image.new("RGBA", (W, H))
-    d = ImageDraw.Draw(ring)
-    r = 250
-    d.ellipse([cx - r, cy - r, cx + r, cy + r], outline=rgb("#9FD8FF") + (255,), width=26)
-    d.ellipse([cx - r + 40, cy - r + 40, cx + r - 40, cy + r - 40], outline=rgb("#3FA9F5") + (150,), width=10)
-    img = Image.alpha_composite(img, glow(ring, 30))
+    symbol = os.path.join(HERE, "art", "blue_lantern_symbol.png")
+    if os.path.exists(symbol):
+        # The Blue Lantern symbol (DC's trademark, so it's only in the private build): its blue
+        # shapes glow and the gaps between them show the stars behind
+        size = 600
+        art = np.asarray(Image.open(symbol).convert("RGBA").resize((size, size), Image.LANCZOS)).astype(np.float32)
+        visible = art[..., 3] / 255
+        blue = np.clip((art[..., 2] - art[..., 0] - 60) / 80, 0, 1) * visible
+        emblem = np.zeros((size, size, 4), np.float32)
+        emblem[..., :3] = rgb("#4FB4FF")
+        emblem[..., 3] = blue * 235
+        layer = Image.new("RGBA", (W, H))
+        layer.alpha_composite(Image.fromarray(emblem.astype(np.uint8), "RGBA"), (int(cx - size / 2), int(cy - size / 2)))
+        img = Image.alpha_composite(img, glow(layer, 10))
+    else:
+        # the ring of light
+        ring = Image.new("RGBA", (W, H))
+        d = ImageDraw.Draw(ring)
+        r = 250
+        d.ellipse([cx - r, cy - r, cx + r, cy + r], outline=rgb("#9FD8FF") + (255,), width=26)
+        d.ellipse([cx - r + 40, cy - r + 40, cx + r - 40, cy + r - 40], outline=rgb("#3FA9F5") + (150,), width=10)
+        img = Image.alpha_composite(img, glow(ring, 30))
     return img.convert("RGB")
 
 
