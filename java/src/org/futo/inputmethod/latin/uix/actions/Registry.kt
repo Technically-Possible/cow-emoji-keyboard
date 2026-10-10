@@ -14,7 +14,7 @@ import org.futo.inputmethod.latin.uix.PreferenceUtils
 import org.futo.inputmethod.latin.uix.SettingsKey
 import org.futo.inputmethod.latin.uix.USE_SYSTEM_VOICE_INPUT
 import org.futo.inputmethod.latin.uix.actions.clipboard.ClipboardHistoryAction
-import org.futo.inputmethod.latin.uix.actions.cowkitchen.CowKitchenAction
+import org.futo.inputmethod.latin.uix.actions.kitchen.AnimalKitchenAction
 import org.futo.inputmethod.latin.uix.actions.fonttyper.FontTyperAction
 import org.futo.inputmethod.latin.uix.actions.gif.GifAction
 import org.futo.inputmethod.latin.uix.actions.quickresponses.QuickResponsesAction
@@ -46,7 +46,7 @@ val AllActionsMap = mapOf(
     "left" to ArrowLeftAction,
     "right" to ArrowRightAction,
     "font_typer" to FontTyperAction,
-    "cow_kitchen" to CowKitchenAction,
+    "cow_kitchen" to AnimalKitchenAction,
     "gif_search" to GifAction,
     "quick_responses" to QuickResponsesAction,
 )
@@ -269,7 +269,7 @@ fun String.toActionList(): List<Action> = split(",").mapNotNull { AllActionsMap[
 
 val DefaultActionSettings = mapOf(
     ActionCategory.ActionKey to listOf(EmojiAction),
-    ActionCategory.PinnedKey to listOf(CowKitchenAction, GifAction, QuickResponsesAction, VoiceInputAction),
+    ActionCategory.PinnedKey to listOf(AnimalKitchenAction, GifAction, QuickResponsesAction, VoiceInputAction),
     ActionCategory.Favorites to listOfNotNull(if(IsDebug) MemoryDebugAction else null, SwitchLanguageAction, UndoAction, RedoAction, TextEditAction, ClipboardHistoryAction, ThemeAction, KeyboardModeAction),
     ActionCategory.More to listOf(), // Remaining actions get populated automatically by ensureWellFormed
     ActionCategory.Disabled to listOf(MemoryDebugAction, SystemVoiceInputAction, BugViewerAction)

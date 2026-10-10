@@ -1,8 +1,11 @@
-package org.futo.inputmethod.latin.uix.actions.cowkitchen
+package org.futo.inputmethod.latin.uix.actions.kitchen
 
 import android.content.Context
-import android.graphics.BitmapFactory
-import android.util.LruCache
+import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.provider.Settings
 import android.view.HapticFeedbackConstants
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -10,289 +13,86 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.awaitLongPressOrCancellation
-import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.runtime.MutableState
-import androidx.compose.ui.composed
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.PointerEventPass
-import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.res.stringResource
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.material3.IconButton
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
-import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.jsonArray
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
 import org.futo.inputmethod.latin.R
 import org.futo.inputmethod.latin.common.Constants
-import org.futo.inputmethod.latin.content.FONT_AUTHORITY
 import org.futo.inputmethod.latin.uix.Action
 import org.futo.inputmethod.latin.uix.ActionTextEditor
 import org.futo.inputmethod.latin.uix.ActionWindow
 import org.futo.inputmethod.latin.uix.KeyboardManagerForAction
 import org.futo.inputmethod.latin.uix.LocalKeyboardScheme
 import org.futo.inputmethod.latin.uix.SettingsKey
-import org.futo.inputmethod.latin.uix.actions.emoji.EmojiItem
-import org.futo.inputmethod.latin.uix.dataStore
-import org.futo.inputmethod.latin.uix.isDeviceLocked
-import org.futo.inputmethod.latin.uix.getSetting
 import org.futo.inputmethod.latin.uix.settings.useDataStore
+import org.futo.inputmethod.latin.uix.settings.useDataStoreValue
 import org.futo.inputmethod.latin.uix.theme.Typography
-import java.io.File
 
-/**
- * One Emoji Kitchen combination of the cow face (U+1F42E) with another emoji.
- * Generated by tools/cow_kitchen/fetch_cow_kitchen.py from the emojikitchen.dev data set.
- */
-data class CowKitchenEntry(
-    val emoji: String,
-    /** Official name of the partner emoji, e.g. "face with tears of joy" */
-    val name: String,
-    val alt: String,
-    val description: String,
-    /** Lowercase search tags: name, aliases, Unicode names and emojikitchen.dev keywords */
-    val keywords: List<String>,
-    val file: String
-) {
-    val nameWords: List<String> = name.lowercase().split(' ').filter { it.isNotEmpty() }
-    val keywordWords: List<String> = keywords.flatMap { it.split(' ') }.filter { it.isNotEmpty() }.distinct()
-}
-
-/** When enabled, tapping an emoji in the regular emoji panel sends its cow combination instead */
-val CowReplaceEmojiTaps = SettingsKey(booleanPreferencesKey("cow_kitchen_replace_emoji_taps"), true)
-
-private const val COW_MIME_TYPE = "image/png"
-private const val USAGE_LIMIT = 64
 private const val MOST_USED_SHOWN = 20
 
-/**
- * One set of Emoji Kitchen images bundled in the app's assets (an index JSON plus PNGs). Images
- * are handed to apps through the content provider at content://<app>.font/<route>/<file>.
- */
-open class KitchenSet(
-    private val assetDir: String,
-    private val indexFile: String,
-    val route: String,
-    val label: String
-) {
-    @Volatile private var entries: List<CowKitchenEntry>? = null
-    private var byEmoji: Map<String, CowKitchenEntry> = emptyMap()
-    private var byFile: Map<String, CowKitchenEntry> = emptyMap()
-
-    private val thumbnails = object : LruCache<String, ImageBitmap>(16 * 1024 * 1024) {
-        override fun sizeOf(key: String, value: ImageBitmap): Int = value.width * value.height * 4
-    }
-
-    // Emoji Kitchen and gemoji disagree on variation selectors, and combinations only exist for
-    // the default skin tone, so both are stripped before matching
-    private fun normalize(emoji: String): String = buildString {
-        var i = 0
-        while (i < emoji.length) {
-            val cp = emoji.codePointAt(i)
-            if (cp != 0xFE0F && cp !in 0x1F3FB..0x1F3FF) appendCodePoint(cp)
-            i += Character.charCount(cp)
-        }
-    }
-
-    fun getEntries(context: Context): List<CowKitchenEntry> = entries ?: synchronized(this) {
-        entries ?: run {
-            val text = context.assets.open("$assetDir/$indexFile").bufferedReader().use { it.readText() }
-            val list = Json.parseToJsonElement(text).jsonArray.map {
-                val obj = it.jsonObject
-                CowKitchenEntry(
-                    emoji = obj["emoji"]!!.jsonPrimitive.content,
-                    name = obj["name"]?.jsonPrimitive?.content
-                        ?: obj["description"]?.jsonPrimitive?.content?.replace('_', ' ') ?: "",
-                    alt = obj["alt"]!!.jsonPrimitive.content,
-                    description = obj["description"]?.jsonPrimitive?.content ?: "",
-                    keywords = obj["keywords"]?.jsonArray?.map { k -> k.jsonPrimitive.content } ?: listOf(),
-                    file = obj["file"]!!.jsonPrimitive.content
-                )
-            }
-            byEmoji = list.associateBy { normalize(it.emoji) }
-            byFile = list.associateBy { it.file }
-            entries = list
-            list
-        }
-    }
-
-    /**
-     * Every typed word must start some word of the emoji's name or tags, so "tears joy" and "cry"
-     * both find 😂. Pasting the emoji itself works too. Name matches are listed first.
-     */
-    fun search(entries: List<CowKitchenEntry>, query: String): List<CowKitchenEntry> {
-        val q = query.trim().lowercase()
-        if (q.isEmpty()) return entries
-        val words = q.split(' ').filter { it.isNotEmpty() }
-        val qEmoji = normalize(query.trim())
-
-        return entries.mapNotNull { e ->
-            val score = when {
-                normalize(e.emoji) == qEmoji || e.name == q -> 0
-                // Whole words beat partial ones, so "cry" ranks 😭 above 🔮 (crystal ball)
-                words.all { it in e.nameWords } -> 1
-                words.all { it in e.keywordWords } -> 2
-                words.all { w -> e.nameWords.any { it.startsWith(w) } } -> 3
-                words.all { w -> e.keywordWords.any { it.startsWith(w) } } -> 4
-                else -> return@mapNotNull null
-            }
-            e to score
-        }.sortedBy { it.second }.map { it.first }
-    }
-
-    fun find(context: Context, emoji: String): CowKitchenEntry? {
-        getEntries(context)
-        return byEmoji[normalize(emoji)]
-    }
-
-    /**
-     * Copies the asset into the cache dir so the content provider can hand out a plain file.
-     * Copies older than the installed APK are refreshed, so updated artwork replaces stale images.
-     */
-    fun getCachedFile(context: Context, fileName: String): File {
-        getEntries(context)
-        require(byFile.containsKey(fileName)) { "Unknown $label kitchen image $fileName" }
-
-        val dir = File(context.cacheDir, assetDir).apply { mkdirs() }
-        val file = File(dir, fileName)
-        if (!file.exists() || file.length() == 0L || file.lastModified() < apkUpdateTime(context)) {
-            val tmp = File(dir, "$fileName.tmp")
-            context.assets.open("$assetDir/$fileName").use { input ->
-                tmp.outputStream().use { input.copyTo(it) }
-            }
-            file.delete()
-            tmp.renameTo(file)
-        }
-        return file
-    }
-
-    private var apkUpdateTime: Long? = null
-    private fun apkUpdateTime(context: Context): Long = apkUpdateTime ?: runCatching {
-        context.packageManager.getPackageInfo(context.packageName, 0).lastUpdateTime
-    }.getOrDefault(0L).also { apkUpdateTime = it }
-
-    fun loadThumbnail(context: Context, entry: CowKitchenEntry): ImageBitmap? {
-        thumbnails.get(entry.file)?.let { return it }
-        val bitmap = context.assets.open("$assetDir/${entry.file}").use {
-            BitmapFactory.decodeStream(it, null, BitmapFactory.Options().apply { inSampleSize = 4 })
-        }?.asImageBitmap() ?: return null
-        thumbnails.put(entry.file, bitmap)
-        return bitmap
-    }
-
-    /** Full-resolution image for the press-and-hold preview */
-    fun loadFull(context: Context, entry: CowKitchenEntry): ImageBitmap? =
-        context.assets.open("$assetDir/${entry.file}").use { BitmapFactory.decodeStream(it) }?.asImageBitmap()
-
-    fun send(manager: KeyboardManagerForAction, entry: CowKitchenEntry): Boolean {
-        val uri = "content://${FONT_AUTHORITY}/$route/${entry.file}".toUri()
-        val sent = manager.typeUri(uri, listOf(COW_MIME_TYPE), true)
-        if (sent) {
-            val context = manager.getContext()
-            manager.getLifecycleScope().launch { recordUse(context, entry.file) }
-        }
-        return sent
-    }
-
-    private val usageKey = stringPreferencesKey("${route}_kitchen_usage")
-
-    // Stored as "file=count" pairs separated by ';', most used first
-    private fun parseUsage(stored: String?): LinkedHashMap<String, Int> = LinkedHashMap<String, Int>().apply {
-        stored?.split(';')?.forEach { pair ->
-            val i = pair.lastIndexOf('=')
-            if (i > 0) pair.substring(i + 1).toIntOrNull()?.let { put(pair.substring(0, i), it) }
-        }
-    }
-
-    private suspend fun recordUse(context: Context, file: String) {
-        if (context.isDeviceLocked) return
-        context.dataStore.edit { ds ->
-            val counts = parseUsage(ds[usageKey])
-            // Re-inserted first, so among equal counts the most recently used wins
-            val updated = linkedMapOf(file to (counts.remove(file) ?: 0) + 1).apply { putAll(counts) }
-            ds[usageKey] = updated.entries.sortedByDescending { it.value }.take(USAGE_LIMIT)
-                .joinToString(";") { "${it.key}=${it.value}" }
-        }
-    }
-
-    /** The most often sent combinations, for the strip at the top of the panel */
-    suspend fun mostUsed(context: Context, limit: Int): List<CowKitchenEntry> {
-        if (context.isDeviceLocked) return emptyList()
-        getEntries(context)
-        return parseUsage(context.getSetting(usageKey, "")).keys.mapNotNull { byFile[it] }.take(limit)
-    }
-}
-
-object CowKitchen : KitchenSet("cow_kitchen", "cow_kitchen.json", "cow", "cow") {
-    /**
-     * Called by the regular emoji panel. Returns true if the cow combination was sent, false if the
-     * caller should type the plain emoji instead (disabled, no combination, or app can't take images).
-     */
-    fun tryReplaceEmoji(manager: KeyboardManagerForAction, emoji: EmojiItem): Boolean {
-        val context = manager.getContext()
-        if (emoji.category == "ASCII") return false
-        if (!context.getSetting(CowReplaceEmojiTaps)) return false
-        if (!manager.appSupportsImageInsertion(COW_MIME_TYPE, true)) return false
-
-        val entry = find(context, emoji.emoji) ?: find(context, emoji.untoned) ?: return false
-        return send(manager, entry)
-    }
-}
-
 @Composable
-private fun CowKitchenCell(set: KitchenSet, entry: CowKitchenEntry, onClick: (CowKitchenEntry) -> Unit) {
+private fun KitchenCell(set: KitchenSet, entry: KitchenEntry, onClick: (KitchenEntry) -> Unit) {
     val context = LocalContext.current
     val bitmap by produceState<ImageBitmap?>(null, set, entry.file) {
         value = withContext(Dispatchers.IO) { set.loadThumbnail(context, entry) }
@@ -306,16 +106,16 @@ private fun CowKitchenCell(set: KitchenSet, entry: CowKitchenEntry, onClick: (Co
         contentAlignment = Alignment.Center
     ) {
         bitmap?.let {
-            Image(it, contentDescription = "${set.label} + ${entry.name}", modifier = Modifier.fillMaxSize())
+            Image(it, contentDescription = "${set.animal.name} + ${entry.name}", modifier = Modifier.fillMaxSize())
         }
     }
 }
 
 @Composable
-private fun CowKitchenGrid(
+private fun KitchenGrid(
     manager: KeyboardManagerForAction,
     set: KitchenSet,
-    entries: List<CowKitchenEntry>,
+    entries: List<KitchenEntry>,
     searchFilter: String,
     isSearching: Boolean,
     replaceSetting: SettingsKey<Boolean>,
@@ -328,7 +128,7 @@ private fun CowKitchenGrid(
         if (gridState.isScrollInProgress) onScrollStarted()
     }
     val replaceEmojiTaps = useDataStore(replaceSetting)
-    val supportsImages = remember { manager.appSupportsImageInsertion(COW_MIME_TYPE, true) }
+    val supportsImages = remember { manager.appSupportsImageInsertion(KITCHEN_MIME_TYPE, true) }
 
     val shown = remember(entries, searchFilter, isSearching) {
         if (isSearching && searchFilter.isNotBlank()) {
@@ -339,11 +139,11 @@ private fun CowKitchenGrid(
     }
 
     val context = LocalContext.current
-    val mostUsed by produceState(emptyList<CowKitchenEntry>(), set) {
+    val mostUsed by produceState(emptyList<KitchenEntry>(), set) {
         value = withContext(Dispatchers.IO) { set.mostUsed(context, MOST_USED_SHOWN) }
     }
-    val preview = remember { mutableStateOf<CowKitchenEntry?>(null) }
-    val onClick: (CowKitchenEntry) -> Unit = {
+    val preview = remember { mutableStateOf<KitchenEntry?>(null) }
+    val onClick: (KitchenEntry) -> Unit = {
         set.send(manager, it)
         manager.performHapticAndAudioFeedback(Constants.CODE_EMOJI, view)
     }
@@ -363,7 +163,7 @@ private fun CowKitchenGrid(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        stringResource(replaceLabel),
+                        stringResource(replaceLabel, set.animal.name.lowercase()),
                         style = Typography.SmallMl,
                         modifier = Modifier.weight(1.0f)
                     )
@@ -404,12 +204,12 @@ private fun CowKitchenGrid(
                     }
             ) {
                 items(shown, key = { it.file }) { entry ->
-                    CowKitchenCell(set, entry, onClick)
+                    KitchenCell(set, entry, onClick)
                 }
             }
         }
 
-        preview.value?.let { CowKitchenPreview(set, it) }
+        preview.value?.let { KitchenPreview(set, it) }
     }
 }
 
@@ -417,13 +217,13 @@ private fun CowKitchenGrid(
 @Composable
 private fun MostUsedBar(
     set: KitchenSet,
-    entries: List<CowKitchenEntry>,
-    preview: MutableState<CowKitchenEntry?>,
-    onClick: (CowKitchenEntry) -> Unit
+    entries: List<KitchenEntry>,
+    preview: MutableState<KitchenEntry?>,
+    onClick: (KitchenEntry) -> Unit
 ) {
     val rowState = rememberLazyListState()
     Text(
-        stringResource(R.string.action_cow_kitchen_most_used),
+        stringResource(R.string.action_kitchen_most_used),
         style = Typography.SmallMl,
         modifier = Modifier
             .padding(start = 12.dp, top = 4.dp)
@@ -443,7 +243,7 @@ private fun MostUsedBar(
     ) {
         items(entries, key = { it.file }) { entry ->
             Box(Modifier.size(52.dp)) {
-                CowKitchenCell(set, entry, onClick)
+                KitchenCell(set, entry, onClick)
             }
         }
     }
@@ -454,9 +254,9 @@ private fun MostUsedBar(
  * lift to close without sending. Taps and scrolling work as before.
  */
 private fun Modifier.pressAndHoldPreview(
-    shown: List<CowKitchenEntry>,
-    preview: MutableState<CowKitchenEntry?>,
-    entryAt: (Offset) -> CowKitchenEntry?
+    shown: List<KitchenEntry>,
+    preview: MutableState<KitchenEntry?>,
+    entryAt: (Offset) -> KitchenEntry?
 ): Modifier = composed {
     val view = LocalView.current
     pointerInput(shown) {
@@ -489,7 +289,7 @@ private fun Modifier.pressAndHoldPreview(
 }
 
 @Composable
-private fun CowKitchenPreview(set: KitchenSet, entry: CowKitchenEntry) {
+private fun KitchenPreview(set: KitchenSet, entry: KitchenEntry) {
     val context = LocalContext.current
     val full by produceState<ImageBitmap?>(null, set, entry.file) {
         value = withContext(Dispatchers.IO) { set.loadFull(context, entry) }
@@ -505,7 +305,7 @@ private fun CowKitchenPreview(set: KitchenSet, entry: CowKitchenEntry) {
         val side = minOf(maxWidth, maxHeight - 32.dp, 280.dp)
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             image?.let {
-                Image(it, contentDescription = "${set.label} + ${entry.name}", modifier = Modifier.size(side))
+                Image(it, contentDescription = "${set.animal.name} + ${entry.name}", modifier = Modifier.size(side))
             }
             Text(
                 "${entry.emoji}  ${entry.name}",
@@ -519,23 +319,100 @@ private fun CowKitchenPreview(set: KitchenSet, entry: CowKitchenEntry) {
     }
 }
 
-val CowKitchenAction = kitchenAction(
-    CowKitchen, R.drawable.cow, R.string.action_cow_kitchen_title,
-    CowReplaceEmojiTaps, R.string.action_cow_kitchen_replace_emoji_taps
-)
+/** Draws an emoji as a picture, for the toolbar button */
+private fun emojiPainter(emoji: String): Painter {
+    val size = 96
+    val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+    val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        textSize = size * 0.82f
+        textAlign = Paint.Align.CENTER
+    }
+    val y = size / 2f - (paint.descent() + paint.ascent()) / 2f
+    Canvas(bitmap).drawText(emoji, size / 2f, y, paint)
+    return BitmapPainter(bitmap.asImageBitmap())
+}
 
-private fun kitchenAction(
-    set: KitchenSet,
-    icon: Int,
-    name: Int,
-    replaceSetting: SettingsKey<Boolean>,
-    replaceLabel: Int
-) = Action(
-    icon = icon,
-    name = name,
+/** Shown in place of the grid until the animal's images are on the phone */
+@Composable
+private fun DownloadPanel(set: KitchenSet) {
+    val context = LocalContext.current
+    val animal = set.animal
+    val state = KitchenDownloads.states[set.key]
+    Column(
+        Modifier
+            .fillMaxSize()
+            .padding(horizontal = 24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(animal.emoji, fontSize = 40.sp)
+        Text(
+            stringResource(R.string.kitchen_download_body, animal.name.lowercase(), animal.count, set.approximateMegabytes),
+            style = Typography.SmallMl,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(vertical = 8.dp)
+        )
+        when {
+            state is KitchenDownloads.State.Running -> {
+                LinearProgressIndicator(
+                    progress = { state.done.toFloat() / state.total.coerceAtLeast(1) },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Text(
+                    stringResource(R.string.kitchen_download_progress, state.done, state.total),
+                    style = Typography.SmallMl,
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+            }
+            !KitchenDownloads.hasNetworkPermission(context) -> {
+                Text(
+                    stringResource(R.string.kitchen_download_no_network),
+                    style = Typography.SmallMl,
+                    color = MaterialTheme.colorScheme.error,
+                    textAlign = TextAlign.Center
+                )
+                OutlinedButton(onClick = {
+                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, "package:${context.packageName}".toUri())
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    context.startActivity(intent)
+                }) {
+                    Text(stringResource(R.string.action_gif_network_permission_button))
+                }
+            }
+            else -> {
+                if (state is KitchenDownloads.State.Failed) {
+                    Text(
+                        stringResource(R.string.kitchen_download_failed, state.message),
+                        style = Typography.SmallMl,
+                        color = MaterialTheme.colorScheme.error,
+                        textAlign = TextAlign.Center
+                    )
+                }
+                Button(onClick = { KitchenDownloads.start(context, set) }) {
+                    Text(stringResource(R.string.kitchen_download_button, animal.name.lowercase()))
+                }
+            }
+        }
+    }
+}
+
+/**
+ * The animal panel: every Emoji Kitchen combination of the chosen animal. Registered under the
+ * "cow_kitchen" key, from when the cow was the only animal, so existing action layouts keep it.
+ */
+val AnimalKitchenAction = Action(
+    icon = R.drawable.cow,
+    name = R.string.action_animal_kitchen_title,
     canShowKeyboard = true,
     simplePressImpl = null,
+    iconPainter = {
+        val context = LocalContext.current
+        val key = useDataStoreValue(KitchenAnimalSetting)
+        val emoji = remember(key) { (KitchenAnimals.ready(context, key) ?: KitchenAnimals.active(context)).emoji }
+        remember(emoji) { emojiPainter(emoji) }
+    },
     windowImpl = { manager, _ ->
+        val set = KitchenSet.active(manager.getContext())
         object : ActionWindow() {
             private val searchText = mutableStateOf("")
             private val searching = mutableStateOf(false)
@@ -551,20 +428,27 @@ private fun kitchenAction(
 
             @Composable
             override fun windowName(): String {
-                return stringResource(name)
+                return stringResource(R.string.action_kitchen_window_title, set.animal.name)
             }
 
             @Composable
             override fun WindowContents(keyboardShown: Boolean) {
                 val context = LocalContext.current
-                val entries by produceState<List<CowKitchenEntry>?>(null) {
+                // re-read when a download finishes
+                val available = KitchenDownloads.states[set.key] == null && set.isAvailable(context)
+                if (!available) {
+                    DownloadPanel(set)
+                    return
+                }
+
+                val entries by produceState<List<KitchenEntry>?>(null) {
                     value = withContext(Dispatchers.IO) { set.getEntries(context) }
                 }
 
                 entries?.let {
-                    CowKitchenGrid(
+                    KitchenGrid(
                         manager, set, it, searchText.value, searching.value,
-                        replaceSetting, replaceLabel,
+                        KitchenReplaceEmojiTaps, R.string.action_kitchen_replace_emoji_taps,
                         onScrollStarted = { finishEditing() }
                     )
                 }
@@ -573,7 +457,7 @@ private fun kitchenAction(
             @Composable
             override fun WindowTitleBar(rowScope: RowScope) {
                 if (searching.value) {
-                    val placeholder = stringResource(R.string.action_cow_kitchen_search_placeholder)
+                    val placeholder = stringResource(R.string.action_kitchen_search_placeholder)
                     val boxModifier = with(rowScope) {
                         Modifier
                             .weight(1.0f)
@@ -620,7 +504,7 @@ private fun kitchenAction(
                             searching.value = false
                             searchText.value = ""
                         }) {
-                            Icon(painterResource(R.drawable.close), contentDescription = stringResource(R.string.action_cow_kitchen_clear_search))
+                            Icon(painterResource(R.drawable.close), contentDescription = stringResource(R.string.action_kitchen_clear_search))
                         }
                     }
                 } else {

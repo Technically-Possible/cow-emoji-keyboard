@@ -1,0 +1,418 @@
+[
+ {
+  "key": "monkey",
+  "name": "Monkey",
+  "emoji": "🐵",
+  "codepoint": "1f435",
+  "count": 365,
+  "builtIn": false
+ },
+ {
+  "key": "lion",
+  "name": "Lion",
+  "emoji": "🦁",
+  "codepoint": "1f981",
+  "count": 361,
+  "builtIn": false
+ },
+ {
+  "key": "tiger",
+  "name": "Tiger",
+  "emoji": "🐯",
+  "codepoint": "1f42f",
+  "count": 369,
+  "builtIn": false
+ },
+ {
+  "key": "cat",
+  "name": "Cat",
+  "emoji": "🐱",
+  "codepoint": "1f431",
+  "count": 372,
+  "builtIn": false
+ },
+ {
+  "key": "dog",
+  "name": "Dog",
+  "emoji": "🐶",
+  "codepoint": "1f436",
+  "count": 356,
+  "builtIn": false
+ },
+ {
+  "key": "wolf",
+  "name": "Wolf",
+  "emoji": "🐺",
+  "codepoint": "1f43a",
+  "count": 358,
+  "builtIn": false
+ },
+ {
+  "key": "bear",
+  "name": "Bear",
+  "emoji": "🐻",
+  "codepoint": "1f43b",
+  "count": 363,
+  "builtIn": false
+ },
+ {
+  "key": "koala",
+  "name": "Koala",
+  "emoji": "🐨",
+  "codepoint": "1f428",
+  "count": 367,
+  "builtIn": false
+ },
+ {
+  "key": "panda",
+  "name": "Panda",
+  "emoji": "🐼",
+  "codepoint": "1f43c",
+  "count": 362,
+  "builtIn": false
+ },
+ {
+  "key": "mouse",
+  "name": "Mouse",
+  "emoji": "🐭",
+  "codepoint": "1f42d",
+  "count": 363,
+  "builtIn": false
+ },
+ {
+  "key": "rabbit",
+  "name": "Rabbit",
+  "emoji": "🐰",
+  "codepoint": "1f430",
+  "count": 566,
+  "builtIn": false
+ },
+ {
+  "key": "fox",
+  "name": "Fox",
+  "emoji": "🦊",
+  "codepoint": "1f98a",
+  "count": 357,
+  "builtIn": false
+ },
+ {
+  "key": "raccoon",
+  "name": "Raccoon",
+  "emoji": "🦝",
+  "codepoint": "1f99d",
+  "count": 598,
+  "builtIn": false
+ },
+ {
+  "key": "cow",
+  "name": "Cow",
+  "emoji": "🐮",
+  "codepoint": "1f42e",
+  "count": 396,
+  "builtIn": true
+ },
+ {
+  "key": "pig",
+  "name": "Pig",
+  "emoji": "🐷",
+  "codepoint": "1f437",
+  "count": 365,
+  "builtIn": false
+ },
+ {
+  "key": "unicorn",
+  "name": "Unicorn",
+  "emoji": "🦄",
+  "codepoint": "1f984",
+  "count": 619,
+  "builtIn": false
+ },
+ {
+  "key": "dragon",
+  "name": "Dragon",
+  "emoji": "🐉",
+  "codepoint": "1f409",
+  "count": 618,
+  "builtIn": false
+ },
+ {
+  "key": "turtle",
+  "name": "Turtle",
+  "emoji": "🐢",
+  "codepoint": "1f422",
+  "count": 359,
+  "builtIn": false
+ },
+ {
+  "key": "snake",
+  "name": "Snake",
+  "emoji": "🐍",
+  "codepoint": "1f40d",
+  "count": 464,
+  "builtIn": false
+ },
+ {
+  "key": "frog",
+  "name": "Frog",
+  "emoji": "🐸",
+  "codepoint": "1f438",
+  "count": 371,
+  "builtIn": false
+ },
+ {
+  "key": "poodle",
+  "name": "Poodle",
+  "emoji": "🐩",
+  "codepoint": "1f429",
+  "count": 559,
+  "builtIn": false
+ },
+ {
+  "key": "horse",
+  "name": "Horse",
+  "emoji": "🐎",
+  "codepoint": "1f40e",
+  "count": 509,
+  "builtIn": false
+ },
+ {
+  "key": "goat",
+  "name": "Goat",
+  "emoji": "🐐",
+  "codepoint": "1f410",
+  "count": 610,
+  "builtIn": false
+ },
+ {
+  "key": "deer",
+  "name": "Deer",
+  "emoji": "🦌",
+  "codepoint": "1f98c",
+  "count": 414,
+  "builtIn": false
+ },
+ {
+  "key": "llama",
+  "name": "Llama",
+  "emoji": "🦙",
+  "codepoint": "1f999",
+  "count": 353,
+  "builtIn": false
+ },
+ {
+  "key": "sloth",
+  "name": "Sloth",
+  "emoji": "🦥",
+  "codepoint": "1f9a5",
+  "count": 348,
+  "builtIn": false
+ },
+ {
+  "key": "hedgehog",
+  "name": "Hedgehog",
+  "emoji": "🦔",
+  "codepoint": "1f994",
+  "count": 357,
+  "builtIn": false
+ },
+ {
+  "key": "bat",
+  "name": "Bat",
+  "emoji": "🦇",
+  "codepoint": "1f987",
+  "count": 573,
+  "builtIn": false
+ },
+ {
+  "key": "owl",
+  "name": "Owl",
+  "emoji": "🦉",
+  "codepoint": "1f989",
+  "count": 430,
+  "builtIn": false
+ },
+ {
+  "key": "bird",
+  "name": "Bird",
+  "emoji": "🐦",
+  "codepoint": "1f426",
+  "count": 364,
+  "builtIn": false
+ },
+ {
+  "key": "chicken",
+  "name": "Chicken",
+  "emoji": "🐔",
+  "codepoint": "1f414",
+  "count": 462,
+  "builtIn": false
+ },
+ {
+  "key": "peacock",
+  "name": "Peacock",
+  "emoji": "🦚",
+  "codepoint": "1f99a",
+  "count": 422,
+  "builtIn": false
+ },
+ {
+  "key": "goose",
+  "name": "Goose",
+  "emoji": "🪿",
+  "codepoint": "1fabf",
+  "count": 386,
+  "builtIn": false
+ },
+ {
+  "key": "dove",
+  "name": "Dove",
+  "emoji": "🕊️",
+  "codepoint": "1f54a-fe0f",
+  "count": 365,
+  "builtIn": false
+ },
+ {
+  "key": "flamingo",
+  "name": "Flamingo",
+  "emoji": "🦩",
+  "codepoint": "1f9a9",
+  "count": 443,
+  "builtIn": false
+ },
+ {
+  "key": "skunk",
+  "name": "Skunk",
+  "emoji": "🦨",
+  "codepoint": "1f9a8",
+  "count": 466,
+  "builtIn": false
+ },
+ {
+  "key": "penguin",
+  "name": "Penguin",
+  "emoji": "🐧",
+  "codepoint": "1f427",
+  "count": 353,
+  "builtIn": false
+ },
+ {
+  "key": "shark",
+  "name": "Shark",
+  "emoji": "🦈",
+  "codepoint": "1f988",
+  "count": 601,
+  "builtIn": false
+ },
+ {
+  "key": "whale",
+  "name": "Whale",
+  "emoji": "🐳",
+  "codepoint": "1f433",
+  "count": 616,
+  "builtIn": false
+ },
+ {
+  "key": "fish",
+  "name": "Fish",
+  "emoji": "🐟",
+  "codepoint": "1f41f",
+  "count": 507,
+  "builtIn": false
+ },
+ {
+  "key": "lobster",
+  "name": "Lobster",
+  "emoji": "🦞",
+  "codepoint": "1f99e",
+  "count": 356,
+  "builtIn": false
+ },
+ {
+  "key": "crab",
+  "name": "Crab",
+  "emoji": "🦀",
+  "codepoint": "1f980",
+  "count": 549,
+  "builtIn": false
+ },
+ {
+  "key": "octopus",
+  "name": "Octopus",
+  "emoji": "🐙",
+  "codepoint": "1f419",
+  "count": 422,
+  "builtIn": false
+ },
+ {
+  "key": "scorpion",
+  "name": "Scorpion",
+  "emoji": "🦂",
+  "codepoint": "1f982",
+  "count": 459,
+  "builtIn": false
+ },
+ {
+  "key": "spider",
+  "name": "Spider",
+  "emoji": "🕷️",
+  "codepoint": "1f577-fe0f",
+  "count": 522,
+  "builtIn": false
+ },
+ {
+  "key": "snail",
+  "name": "Snail",
+  "emoji": "🐌",
+  "codepoint": "1f40c",
+  "count": 348,
+  "builtIn": false
+ },
+ {
+  "key": "cricket",
+  "name": "Cricket",
+  "emoji": "🦗",
+  "codepoint": "1f997",
+  "count": 273,
+  "builtIn": false
+ },
+ {
+  "key": "beetle",
+  "name": "Beetle",
+  "emoji": "🪲",
+  "codepoint": "1fab2",
+  "count": 279,
+  "builtIn": false
+ },
+ {
+  "key": "cockroach",
+  "name": "Cockroach",
+  "emoji": "🪳",
+  "codepoint": "1fab3",
+  "count": 417,
+  "builtIn": false
+ },
+ {
+  "key": "bee",
+  "name": "Bee",
+  "emoji": "🐝",
+  "codepoint": "1f41d",
+  "count": 356,
+  "builtIn": false
+ },
+ {
+  "key": "ladybug",
+  "name": "Ladybug",
+  "emoji": "🐞",
+  "codepoint": "1f41e",
+  "count": 382,
+  "builtIn": false
+ },
+ {
+  "key": "butterfly",
+  "name": "Butterfly",
+  "emoji": "🦋",
+  "codepoint": "1f98b",
+  "count": 569,
+  "builtIn": false
+ }
+]

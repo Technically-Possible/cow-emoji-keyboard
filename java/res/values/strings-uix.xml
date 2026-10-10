@@ -34,12 +34,26 @@
     <string name="action_emoji_category_ascii">ASCII</string>
     <string name="action_emoji_search_no_results_found">No results found</string>
 
-    <!-- For the cow Emoji Kitchen action (cow face combined with other emojis) -->
-    <string name="action_cow_kitchen_title">Cow Kitchen</string>
-    <string name="action_cow_kitchen_search_placeholder">Search by emoji name</string>
-    <string name="action_cow_kitchen_clear_search">Clear search</string>
-    <string name="action_cow_kitchen_most_used">Most used</string>
-    <string name="action_cow_kitchen_replace_emoji_taps">Send cow combos from the emoji panel</string>
+    <!-- For the animal Emoji Kitchen action (an animal combined with other emojis) -->
+    <string name="action_animal_kitchen_title">Animal Kitchen</string>
+    <!-- Panel title, e.g. "Cow Kitchen" -->
+    <string name="action_kitchen_window_title"><xliff:g name="animal" example="Cow">%s</xliff:g> Kitchen</string>
+    <string name="action_kitchen_search_placeholder">Search by emoji name</string>
+    <string name="action_kitchen_clear_search">Clear search</string>
+    <string name="action_kitchen_most_used">Most used</string>
+    <string name="action_kitchen_replace_emoji_taps">Send <xliff:g name="animal" example="cow">%s</xliff:g> combos from the emoji panel</string>
+    <string name="kitchen_download_body">The <xliff:g name="animal" example="lion">%1$s</xliff:g> has <xliff:g name="count" example="361">%2$d</xliff:g> Emoji Kitchen combos (about <xliff:g name="size" example="4">%3$d</xliff:g> MB). They download once from Google’s Emoji Kitchen servers, then work offline.</string>
+    <string name="kitchen_download_button">Download the <xliff:g name="animal" example="lion">%s</xliff:g> combos</string>
+    <string name="kitchen_download_progress">Downloading… <xliff:g name="done" example="120">%1$d</xliff:g> of <xliff:g name="total" example="361">%2$d</xliff:g></string>
+    <string name="kitchen_download_failed">Download failed: <xliff:g name="error" example="HTTP 500">%s</xliff:g></string>
+    <string name="kitchen_download_later">The <xliff:g name="animal" example="lion">%1$s</xliff:g> combos (about <xliff:g name="size" example="4">%2$d</xliff:g> MB) download the first time you open its panel.</string>
+    <string name="kitchen_download_no_network">Network access is off for this keyboard, so the combos can’t download. Turn it on in the app’s settings.</string>
+    <string name="kitchen_wip">WIP</string>
+    <string name="kitchen_settings_title">Animal</string>
+    <string name="kitchen_settings_body">Your emoji mixes star this animal. The cow is built in; other animals download their combos when you pick them. Animals marked WIP aren’t in Emoji Kitchen yet.</string>
+    <string name="kitchen_setup_step">Choose your animal</string>
+    <string name="kitchen_setup_body">Every emoji mix on your keyboard will star this animal. You can change it any time in Settings → Animal.</string>
+    <string name="kitchen_setup_continue">Continue with <xliff:g name="animal" example="🐮 Cow">%s</xliff:g></string>
 
     <!-- For the quick responses action (saved phrases sent with one tap) -->
     <string name="action_quick_responses_title">Quick Responses</string>
